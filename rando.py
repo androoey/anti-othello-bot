@@ -130,6 +130,7 @@ moo = possibleMoves('w',grid)
 for e in moo:
   print(e,end = ", ")
 print()
+print("selected move is" + getMove('w',grid))
 printGrid(grid)
 
 #line = '...'
