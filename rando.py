@@ -68,10 +68,8 @@ def updateBoard(color,move,board):
     curr_col = ord(move[0]) - 97
 
     valid_move = isValidMove(color,move,board)
-    if not valid_move:
-      raise Exception("Not a valid move")
-
-    print("enters loop")
+    #if not valid_move:
+    #  raise Exception("Not a valid move")done
       
     for r in range(-1,2):
       for c in range(-1,2):
@@ -109,14 +107,6 @@ def possibleMoves(color,board):
 def getMove(color,board):
   return random.choice(possibleMoves(color,board))
 
-grid[3][3] = 'b'
-grid[4][4] = 'b'
-grid[3][4] = 'w'
-grid[4][3] = 'w'
-open_space.remove('d4')
-open_space.remove('e4')
-open_space.remove('d5')
-open_space.remove('e5')
 #if not isValidMove('w','d6',grid):
 #  print("TEST 1 FAILED!")
 #if not isValidMove('w','f8',grid):
@@ -124,19 +114,29 @@ open_space.remove('e5')
 
 #if isValidMove('w','h1',grid):
 #  print("TEST 3 FAILED!")
-printGrid(grid)
-updateBoard('b','f4',grid)
-moo = possibleMoves('w',grid)
-for e in moo:
-  print(e,end = ", ")
-print()
-print("selected move is" + getMove('w',grid))
-printGrid(grid)
+#printGrid(grid)
+#updateBoard('b','f4',grid)
+#moo = possibleMoves('w',grid)
+#for e in moo:
+#  print(e,end = ", ")
+#print()
+#print("selected move is" + getMove('w',grid))
+#printGrid(grid)
 
-#line = '...'
-#while line and line != 'done':
-#  line = input()
-#  if line == 'get move':
-#    print('d4', flush=True)
-#  else:
-#    pass
+bot_color = ''
+line = '...'
+while line and line != 'done':
+  line = input()
+  if line == 'b':
+    bot_color = 'b'
+  elif line == 'w':
+    bot_color = 'w'
+  elif line == 'get move':
+    print(getMove(bot_color,grid), flush=True)
+  elif line == 'done':
+    pass
+  else:
+    words = str.split(line)
+    updateBoard(words[1],words[2],grid)
+    #printGrid(grid)
+    
