@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import random
+import time
+
 #bw = input()
 #print('ok', flush=True)
 
@@ -132,11 +134,13 @@ while line and line != 'done':
   elif line == 'w':
     bot_color = 'w'
   elif line == 'get move':
+    #start_time = time.time()
     print(getMove(bot_color,grid), flush=True)
+    #print("--- %s seconds ---" % (time.time() - start_time))
   elif line == 'done':
     pass
   else:
     words = str.split(line)
     updateBoard(words[1],words[2],grid)
-    #printGrid(grid)
+    printGrid(grid)
     
