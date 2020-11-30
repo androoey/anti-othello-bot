@@ -68,10 +68,6 @@ def updateBoard(color,move,board):
     
     curr_row = int(move[1]) - 1
     curr_col = ord(move[0]) - 97
-
-    valid_move = isValidMove(color,move,board)
-    #if not valid_move:
-    #  raise Exception("Not a valid move")done
       
     for r in range(-1,2):
       for c in range(-1,2):

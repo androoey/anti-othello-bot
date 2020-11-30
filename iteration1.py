@@ -1,14 +1,34 @@
 #!/usr/bin/env python3
 import random
 import time
+import math
+import copy
+from typing import Tuple,List
+
+search_depth = 3
+
+def opposite(color):
+    if color == 'w':
+        return 'b'
+    else:
+        return 'w'
 
 class Board:
-    def __init__(self,side_length):
+    def __init__(self,side_length,grid):
+        self.grid = []
+        if grid is not None:
+            self.grid = copy.deepcopy(grid)
+        else:
+            self.grid = [["."] * side_length for i in range(side_length)]
         self.open_space = []
         for r in range(side_length):
             for c in range(side_length):
-                self.open_space.append("{}{}".format(chr(c + 97),str(r+1)))
-        self.grid = [["."] * side_length for i in range(side_length)]
+                if self.grid[r][c] == '.':
+                    self.open_space.append("{}{}".format(chr(c + 97),str(r+1)))
+        self.side_length = side_length
+
+    def getGrid(self) -> List[List[str]]:
+        return self.grid
 
     def printGrid(self):
         print("    a b c d e f g h ")
@@ -53,7 +73,7 @@ class Board:
                     curr_col += c
         return False
         
-    def updateBoard(self,color,move) -> None:
+    def updateBoard(self,color,move):
         opposite = ''
         if color == 'w':
             opposite = 'b'
@@ -95,8 +115,77 @@ class Board:
                 moveset.append(move)
         return moveset
 
-    def getMove(color):
-        return random.choice(self.possibleMoves(color))
+    def gameOver(self) -> bool:
+        return len(self.possibleMoves('w')) == 0 and len(self.possibleMoves('b')) == 0
+
+    #returns number of black and white
+    def countPieces(self) -> Tuple[int,int]:
+        black,white = 0,0
+        for row in range(self.side_length):
+            for col in range(self.side_length):
+                if self.grid[row][col] == 'b':
+                    black += 1
+                elif self.grid[row][col] == 'w':
+                    white += 1
+        return (black,white)
+
+def heuristic(board) -> int:
+    (black,white) = board.countPieces()
+    return black - white
+
+def min(board,color,depth) -> Tuple[str,int]:
+    finished = board.gameOver()
+    if finished:
+        (black,white) = board.countPieces()
+        return ("game over",black - white)
+
+    choices = board.possibleMoves(color)
+    (best_move,best_score) = ('',math.inf)
+    for move in choices:
+        #print("move considered: " + move)
+        new_board = Board(8,board.getGrid())
+        new_board.updateBoard(color,move)
+        temp = 0
+        if depth == 0:
+            temp = heuristic(new_board)
+            #print("score is: ",end = '')
+            #print(temp)
+            #new_board.printGrid()
+        else:
+            (rando,temp) = max(new_board,opposite(color),depth - 1)
+        if temp < best_score:
+            best_move = move
+            best_score = temp
+    return (best_move,best_score)
+
+def max(board,color,depth) -> Tuple[str,int]:
+    finished = board.gameOver()
+    if finished:
+        (black,white) = board.countPieces()
+        return ("game over",black - white)
+
+    choices = board.possibleMoves(color)
+    (best_move,best_score) = ('',-math.inf)
+    for move in choices:
+        new_board = Board(8,board.getGrid())
+        new_board.updateBoard(color,move)
+        temp = 0
+        if depth == 0:
+            temp = heuristic(board)
+        else:
+            (rando,temp) = min(new_board,opposite(color),depth - 1)
+        if temp > best_score:
+            best_move = move
+            best_score = temp
+    return (best_move,best_score)
+
+def getMove(board,color) -> str:
+    if color == 'b':
+        (move,score) = min(board,color,search_depth)
+        return move
+    else:
+        (move,score) = max(board,color,search_depth)
+        return move
   
 
 
@@ -104,21 +193,22 @@ class Board:
 
 #setup
 line = '...'
-bot_color = ''
-bw = input()
-if line == 'b':
-    bot_color = 'b'
-elif line == 'w':
-    bot_color = 'w'
-main_board = Board(8)
+bot_color = input()
+
+main_board = Board(8,None)
+#main_board.updateBoard('b','d4')
+#main_board.updateBoard('w','e4')
+#main_board.updateBoard('w','f4')
+#main_board.updateBoard('b','d3')
+#main_board.printGrid()
 
 print('ok', flush=True)
 while line and line != 'done':
   line = input()
   if line == 'get move':
-    #start_time = time.time()
-    print(main_board.getMove(bot_color), flush=True)
-    #print("--- %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    print(getMove(main_board,bot_color), flush=True)
+    print("--- %s seconds ---" % (time.time() - start_time))
   elif line == 'done':
     pass
   else:
