@@ -131,8 +131,10 @@ while line and line != 'done':
   line = input()
   if line == 'b':
     bot_color = 'b'
+    print("ok")
   elif line == 'w':
     bot_color = 'w'
+    print("ok")
   elif line == 'get move':
     #start_time = time.time()
     print(getMove(bot_color,grid), flush=True)
